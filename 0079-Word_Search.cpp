@@ -1,50 +1,54 @@
-// backtrace
+#include <string>
+#include <vector>
+
+using namespace std;
+// backtrack
 class Solution {
-    public:
-    bool exist(vector<vector<char>>& board, string word) {
-        vector<vector<int>> flags;
-        for (int i = 0; i < board.size(); ++i) {
-            vector<int> b; 
-            for (int j = 0; j < board[0].size(); ++j) {
-                b.push_back(0);
-            }
-            flags.push_back(b);
-        }
-        for (int i = 0; i < board.size(); ++i) {
-            for (int j = 0; j < board[0].size(); ++j) {
-                if (backtrace(board, flags, word, 0, i, j))
-                    return true;
-            }
-        }
-        return false;
+public:
+  bool exist(vector<vector<char>> &board, string word) {
+
+    if (board.empty())
+      return false;
+
+    int rows = board.size();
+    int cols = board[0].size();
+
+    for (int i = 0; i < rows; ++i) {
+      for (int j = 0; j < cols; ++j) {
+        if (backtrack(board, word, 0, i, j))
+          return true;
+      }
     }
+    return false;
+  }
 
+  bool backtrack(vector<vector<char>> &board, string &word, int pos, int m,
+                 int n) {
+    if (pos == word.size())
+      return true;
 
+    if (m < 0 || m >= board.size() || n < 0 || n >= board[0].size())
+      return false;
 
-    bool backtrace(vector<vector<char>>& board,
-                   vector<vector<int>>& flags,
-                   string& word,
-                   int pos,
-                   int m,
-                   int n) {
-        if (pos == word.size())
-            return true;
+    // clever! see below.
+    if (board[m][n] != word[pos])
+      return false;
 
-        if(m<0 || m>= board.size() || n<0 || n>=board[0].size())
-            return false;
+    // Excellent idea, use high order bit to indicate if we have already touched
+    // this position. This works because we only use English letters.
+    board[m][n] ^= 256;
+    pos++;
 
-        if (flags[m][n] || board[m][n] != word[pos])
-            return false;
+    if (backtrack(board, word, pos, m - 1, n))
+      return true;
+    if (backtrack(board, word, pos, m, n - 1))
+      return true;
+    if (backtrack(board, word, pos, m + 1, n))
+      return true;
+    if (backtrack(board, word, pos, m, n + 1))
+      return true;
 
-        flags[m][n] = 1;
-        pos++;
-
-        if(backtrace(board, flags, word, pos, m - 1, n)) return true;
-        if(backtrace(board, flags, word, pos, m, n - 1)) return true;
-        if(backtrace(board, flags, word, pos, m + 1, n)) return true;
-        if(backtrace(board, flags, word, pos, m, n + 1)) return true;
-
-        flags[m][n] = 0;
-        return false;
-    }
+    board[m][n] ^= 256;
+    return false;
+  }
 };

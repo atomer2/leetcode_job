@@ -5,8 +5,8 @@
 using namespace std;
 
 class Solution {
- public:
-  vector<vector<int>> permute(vector<int>& nums) {
+public:
+  vector<vector<int>> permute(vector<int> &nums) {
     vector<int> init_vec(nums);
     vector<vector<int>> res;
     res.push_back(init_vec);
@@ -15,7 +15,7 @@ class Solution {
     while (--size > 0) {
       swapTimes *= size;
     }
- 
+
     int index = 0;
     while (--swapTimes) {
       int idx = index % (nums.size() - 1);
@@ -37,5 +37,4 @@ int main() {
     }
     cout << endl;
   }
-  system("pause");
 }

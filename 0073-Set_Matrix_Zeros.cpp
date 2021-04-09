@@ -1,3 +1,6 @@
+#include <vector>
+
+using namespace std;
 // beautiful solution here
 class Solution {
 public:
@@ -52,4 +55,5 @@ public:
             }
         }
     }
+
 };

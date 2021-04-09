@@ -1,45 +1,34 @@
+#include <algorithm>
 #include <iostream>
+#include <limits.h>
 #include <stack>
-#include <climits>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "utils.h"
 
 using namespace std;
 
-// inorder travesal
 class Solution {
- public:
-  bool isValidBST(TreeNode* root) {
-    stack<TreeNode*> s;
-    int min;
-    bool searchRight = false;
-    bool firstPop = true;
-    if (root == nullptr)
-      return true;
-    s.push(root);
-    while (!s.empty()) {
-      auto* currNode = s.top();
-      if (searchRight) {
-        s.pop();
-        if (firstPop) {
-          firstPop = false;
-          min = currNode->val;
-        } else if (currNode->val > min) {
-          min = currNode->val;
-        } else {
-          return false;
-        }
-        if (currNode->right) {
-          s.push(currNode->right);
-          searchRight = false;
-        }
-      } else {
-        if (currNode->left) {
-          s.push(currNode->left);
-        } else {
-          searchRight = true;
-        }
-      }
-    }
-    return true;
+public:
+  // If we use in-order traversal to serialize a binary search tree, we can get
+  // a list of values in ascending order. It can be proved with the definition
+  // of the BST. And here I use the reference of the TreeNode pointer `prev` as
+  // a global variable to mark the address of previous node in the list.
+  bool isValidBST(TreeNode *root) {
+    TreeNode* prev = nullptr;
+    return validate(root, prev);
   }
+
+  bool validate(TreeNode* node, TreeNode* prev){
+    if(!node) return true;
+    if(!validate(node->left, prev)) return false;
+    if(prev && prev->val >= node->val) return false;
+    prev = node;
+    return validate(node->right, prev);
+  }
+
 };
+
+int main() { return 0; }
