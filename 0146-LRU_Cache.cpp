@@ -3,90 +3,83 @@
 using namespace std;
 
 class LRUCache {
- public:
-  typedef struct Dlist {
-    Dlist* pre = nullptr;
-    Dlist* next = nullptr;
+public:
+  typedef struct DbListNode {
+    DbListNode *pre = nullptr;
+    DbListNode *next = nullptr;
     int val;
     int key;
-  } Dlist;
+  } DblistNode;
 
-  LRUCache(int capacity) {
-    count = 0;
-    cap = capacity;
-    head = new Dlist;
-    tail = head;
-    auto p = head;
-    for (int i = 0; i < cap; ++i) {
-      auto node = new Dlist;
-      p->next = node;
-      node->pre = p;
-      p = node;
-    }
-  }
+  LRUCache(int capacity) { m_cap = capacity; }
 
   ~LRUCache() {
-    auto p = head;
+    auto *p = m_head.next;
     while (p) {
-      auto tmp = p;
+      auto *tmp = p;
       p = p->next;
       delete tmp;
     }
+  }
+
+  void RemoveFromList(DbListNode *node) {
+    node->pre->next = node->next;
+    if (node->next)
+      node->next->pre = node->pre;
+    if (node == m_tail) {
+      m_tail = node->pre;
+    }
+  }
+
+  void PutFront(DbListNode *node) {
+    node->next = m_head.next;
+    node->pre = &m_head;
+    m_head.next = node;
+    if(node->next)
+      node->next->pre = node;
+    if (node->next == nullptr)
+      m_tail = node;
   }
 
   int get(int key) {
     auto it = map.find(key);
     if (it == map.end())
       return -1;
-    auto node = it->second;
-    putFront(head, &tail, node);
+    auto *node = it->second;
+    RemoveFromList(node);
+    PutFront(node);
     return node->val;
   }
 
   void put(int key, int value) {
     auto it = map.find(key);
     if (it != map.end()) {
-      auto node = it->second;
+      auto *node = it->second;
       node->val = value;
-      putFront(head, &tail, node);
-    } else if (count == cap) {
-      // remove
-      map.erase(tail->key);
-      tail->val = value;
-      tail->key = key;
-      map[key] = tail;
-      putFront(head, &tail, tail);
+      RemoveFromList(node);
+      PutFront(node);
     } else {
-      tail = tail->next;
-      tail->val = value;
-      tail->key = key;
-      map[key] = tail;
-      count++;
-      putFront(head, &tail, tail);
+      if (map.size() == m_cap) {
+        // remove
+        auto *save = m_tail;
+        // this will change m_tail.
+        RemoveFromList(m_tail);
+        map.erase(save->key);
+        delete save;
+      }
+      auto *node = new DbListNode;
+      node->val = value;
+      node->key = key;
+      map[key] = node;
+      PutFront(node);
     }
   }
 
-  void putFront(Dlist* head, Dlist** tail, Dlist* node) {
-    if (node == head->next)
-      return;
-    if (*tail == node) {
-      *tail = node->pre;
-    }
-    node->pre->next = node->next;
-    if (node->next)
-      node->next->pre = node->pre;
-    node->next = head->next;
-    head->next->pre = node;
-    node->pre = head;
-    head->next = node;
-  }
-
- private:
-  Dlist* head;
-  Dlist* tail;
-  int count;
-  int cap;
-  unordered_map<int, Dlist*> map;
+private:
+  DbListNode m_head;
+  DbListNode *m_tail = &m_head;
+  int m_cap;
+  unordered_map<int, DbListNode *> map;
 };
 
 int main() {
@@ -96,6 +89,5 @@ int main() {
   cache.get(1);
   cache.put(3, 3);
   cout << cache.get(2) << endl;
-  system("pause");
   return 0;
 }
