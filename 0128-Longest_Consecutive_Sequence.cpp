@@ -1,5 +1,6 @@
 class Solution {
 public:
+  // clever.
   int longestConsecutive(vector<int> &nums) {
     unordered_set<int> numSet;
     for (int e : nums)

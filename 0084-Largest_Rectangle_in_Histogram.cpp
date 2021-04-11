@@ -1,14 +1,16 @@
+#include <climits>
 #include <iostream>
 #include <vector>
-#include <climits>
 
 using namespace std;
 
 class Solution {
- public:
-  int largestRectangleArea(vector<int>& heights) {
+public:
+  int largestRectangleArea(vector<int> &heights) {
     int maxArea = 0;
+    // idx of the first bar the left that is lower than current.
     vector<int> lastLeftLess(heights.size(), -1);
+    // idx of the first bar the right that  is lower than current.
     vector<int> lastRightLess(heights.size(), heights.size());
     for (int i = 1; i < heights.size(); ++i) {
       int p = i - 1;
