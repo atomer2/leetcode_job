@@ -10,8 +10,6 @@
 
 using namespace std;
 
-class Solution {
- public:
   int longestSubstring(string s, int k) {
     return helpFunc(s, 0, s.size() - 1, k);
   }
@@ -23,24 +21,28 @@ class Solution {
     for (int i = start; i <= end; i++) {
       count[s[i] - 'a']++;
     }
-    int r = -1;
-    int cut = 0;
+    int r = 0;
     int last = start;
     for (int i = start; i <= end; i++) {
       if (count[s[i] - 'a'] < k) {
-        cut = 1;
         if (i - last >= max(k, r + 1)) {
           int len = helpFunc(s, last, i - 1, k);
           r = max(len, r);
         }
         last = i + 1;
+      } else if (i == end) {
+        int len = last == start ? (end - start + 1) : helpFunc(s, last, i, k);
+        r = max(len, r);
       }
     }
 
-    return cut ? r : end - start + 1;
+    return r;
   }
 };
 
 int main() {
+  string input = "bbaaacbd";
+  Solution sln;
+  cout << "answer is " << sln.longestSubstring(input, 3) << endl;
   return 0;
 }
