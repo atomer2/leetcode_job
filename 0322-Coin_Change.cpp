@@ -31,7 +31,7 @@ class Solution {
 
 int main() {
   Solution sln;
-  vector<int> coins = {1,2, 5};
+  vector<int> coins = {1, 2, 5};
   cout << "min coin is :" << sln.coinChange(coins, 11);
   return 0;
 }
