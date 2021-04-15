@@ -10,6 +10,8 @@
 
 using namespace std;
 
+class Solution {
+ public:
   int longestSubstring(string s, int k) {
     return helpFunc(s, 0, s.size() - 1, k);
   }
@@ -35,7 +37,6 @@ using namespace std;
         r = max(len, r);
       }
     }
-
     return r;
   }
 };
